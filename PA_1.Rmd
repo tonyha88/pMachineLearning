@@ -86,9 +86,9 @@ dim(testData) #[1] 20 53
 I have choose to use "random forests" from the "caret" package to build the model, because it is one of the top performing algorithm in prediction contests, it is easy to use, it also can handle a lot of predictor variables without resorting to use CPA to reduce the numbers of variables first.
 
 To reduce the CPU time for building the predict model, I have enabled "Parallel Processing" by install "foreach",
-"Parallel" and "doParallel" packages, which are needed for the Windows OS. I also choose "cv" (cross-validation) resampling method, which reduces the CPU time substantially. See reference [2] for more information above "Parallel Processing".
+"Parallel" and "doParallel" packages, which are needed for the Windows OS. I also choose "cv" (cross-validation) resampling method, which reduces the CPU time substantially. See reference [2] for more information about "Parallel Processing".
 
-I explored cross-validation resampling method with differnce K-fold (4, 8, 15), differnece training data size (20%, 50% or 70% of the tidydata set), and difference "mtry" number to train the random forest model, to find out which combination yield optimum model in term of accuracy, performing, traing data sise, and CPU time. See reference [3] for more information above model turning.
+I explored cross-validation resampling method with differnce K-fold (4, 8, 15), differnece training data size (20%, 50% or 70% of the tidydata set), and difference "mtry" number to train the random forest model, to find out which combination yield optimum model in term of accuracy, performing, traing data sise, and CPU time. See reference [3] for more information about model turning.
 
 
 ```{r cache=TRUE, echo=TRUE}
@@ -129,7 +129,7 @@ rf8
 ```
 
 ### 2.5 Out of sample error.
-From the model "rf8" output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs, hence "the in sample error" is 0.0 or 0.006 (0.6%). One can expect "the out of sample error" will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation resampling method, and the prediction on the validate data set has confirm this (refer to below).
+From the model "rf8" output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs (even the set.seed command is used), hence the "in sample error" is 0.0 or 0.006 (0.6%). One can expect the "out of sample error" will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation re-sampling method and a lot of observation data (13737). The prediction on the validate data set has confirm this expectation (refer to below).
 
 ```{r cache=TRUE, echo=TRUE}
 # predict the validate data
@@ -137,7 +137,7 @@ pred <- predict(rf8,validateData); predTrainRight <- pred==validateData$classe
 table(pred,predTrainRight)
 length(predTrainRight[predTrainRight==TRUE]) / length(predTrainRight);
 ```
-From the above ouput, the out of sample error on the validate data set is 0.6%
+From the above ouput, the "out of sample error" on the validate data set is 0.6%
 
 ### 2.6 Predict the test cases.
 

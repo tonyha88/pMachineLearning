@@ -98,6 +98,13 @@ dim(testData) #[1] 20 60
 # explore highly structure patterns in the data set
 library(ggplot2)
 library(gridExtra)
+```
+
+```
+## Loading required package: grid
+```
+
+```r
 plot1 <- qplot(classe, new_window, data=tidyData, color=new_window)
 plot2 <- qplot(classe, num_window, data=tidyData, color=num_window)
 grid.arrange(plot1, plot2, ncol=2)
@@ -143,15 +150,22 @@ dim(testData) #[1] 20 53
 I have choose to use "random forests" from the "caret" package to build the model, because it is one of the top performing algorithm in prediction contests, it is easy to use, it also can handle a lot of predictor variables without resorting to use CPA to reduce the numbers of variables first.
 
 To reduce the CPU time for building the predict model, I have enabled "Parallel Processing" by install "foreach",
-"Parallel" and "doParallel" packages, which are needed for the Windows OS. I also choose "cv" (cross-validation) resampling method, which reduces the CPU time substantially. See reference [2] for more information above "Parallel Processing".
+"Parallel" and "doParallel" packages, which are needed for the Windows OS. I also choose "cv" (cross-validation) resampling method, which reduces the CPU time substantially. See reference [2] for more information about "Parallel Processing".
 
-I explored cross-validation resampling method with differnce K-fold (4, 8, 15), differnece training data size (20%, 50% or 70% of the tidydata set), and difference "mtry" number to train the random forest model, to find out which combination yield optimum model in term of accuracy, performing, traing data sise, and CPU time. See reference [3] for more information above model turning.
+I explored cross-validation resampling method with differnce K-fold (4, 8, 15), differnece training data size (20%, 50% or 70% of the tidydata set), and difference "mtry" number to train the random forest model, to find out which combination yield optimum model in term of accuracy, performing, traing data sise, and CPU time. See reference [3] for more information about model turning.
 
 
 
 ```r
 # create training set.
 library(caret)
+```
+
+```
+## Loading required package: lattice
+```
+
+```r
 #trainIndex <- createDataPartition(y = tidyData$classe, p=0.8,list=FALSE) # 15699 rows
 #trainIndex <- createDataPartition(y = tidyData$classe, p=0.5,list=FALSE) # 9812 rows Accuracy=0.991
 trainIndex <- createDataPartition(y = tidyData$classe, p=0.7,list=FALSE)  # 13737 rows Accuracy=0.994,number=15;
@@ -178,6 +192,13 @@ dim(validateData)
 library(foreach)
 library(parallel)
 library(doParallel)
+```
+
+```
+## Loading required package: iterators
+```
+
+```r
 coreNumber<-(detectCores()-1)
 cluster <-makeCluster(coreNumber, type = "SOCK",outfile="")
 registerDoParallel(cluster)
@@ -197,8 +218,14 @@ system.time(rf8 <- train(trainData$classe ~.,data = trainData, method="rf", trCo
 ```
 
 ```
+## Loading required package: randomForest
+## randomForest 4.6-7
+## Type rfNews() to see new features/changes/bug fixes.
+```
+
+```
 ##    user  system elapsed 
-##   40.37    0.61  595.09
+##   40.06    0.54  597.87
 ```
 
 ```r
@@ -221,18 +248,18 @@ rf8
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
-##   4     1         1      0.003        0.004   
-##   5     1         1      0.003        0.004   
-##   6     1         1      0.003        0.003   
-##   7     1         1      0.003        0.004   
-##   8     1         1      0.003        0.003   
+##   4     1         1      0.002        0.003   
+##   5     1         1      0.002        0.003   
+##   6     1         1      0.002        0.003   
+##   7     1         1      0.002        0.002   
+##   8     1         1      0.002        0.002   
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
-## The final value used for the model was mtry = 8.
+## The final value used for the model was mtry = 7.
 ```
 
 ### 2.5 Out of sample error.
-From the model "rf8" output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs, hence "the in sample error" is 0.0 or 0.006 (0.6%). One can expect "the out of sample error" will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation resampling method, and the prediction on the validate data set has confirm this (refer to below).
+From the model "rf8" output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs (even the set.seed command is used), hence the "in sample error" is 0.0 or 0.006 (0.6%). One can expect the "out of sample error" will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation re-sampling method and a lot of observation data (13737). The prediction on the validate data set has confirm this expectation (refer to below).
 
 
 ```r
@@ -244,11 +271,11 @@ table(pred,predTrainRight)
 ```
 ##     predTrainRight
 ## pred FALSE TRUE
-##    A     8 1674
-##    B     5 1126
-##    C    15 1020
-##    D     8  954
-##    E     1 1074
+##    A     4 1673
+##    B     9 1129
+##    C    19 1017
+##    D     1  954
+##    E     1 1078
 ```
 
 ```r
@@ -256,9 +283,9 @@ length(predTrainRight[predTrainRight==TRUE]) / length(predTrainRight);
 ```
 
 ```
-## [1] 0.9937
+## [1] 0.9942
 ```
-From the above ouput, the out of sample error on the validate data set is 0.6%
+From the above ouput, the "out of sample error" on the validate data set is 0.6%
 
 ### 2.6 Predict the test cases.
 

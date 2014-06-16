@@ -265,7 +265,12 @@ dim(testData) #[1] 20 60
 <pre><code class="r"># explore highly structure patterns in the data set
 library(ggplot2)
 library(gridExtra)
-plot1 &lt;- qplot(classe, new_window, data=tidyData, color=new_window)
+</code></pre>
+
+<pre><code>## Loading required package: grid
+</code></pre>
+
+<pre><code class="r">plot1 &lt;- qplot(classe, new_window, data=tidyData, color=new_window)
 plot2 &lt;- qplot(classe, num_window, data=tidyData, color=num_window)
 grid.arrange(plot1, plot2, ncol=2)
 </code></pre>
@@ -304,13 +309,18 @@ dim(testData) #[1] 20 53
 <p>I have choose to use &ldquo;random forests&rdquo; from the &ldquo;caret&rdquo; package to build the model, because it is one of the top performing algorithm in prediction contests, it is easy to use, it also can handle a lot of predictor variables without resorting to use CPA to reduce the numbers of variables first.</p>
 
 <p>To reduce the CPU time for building the predict model, I have enabled &ldquo;Parallel Processing&rdquo; by install &ldquo;foreach&rdquo;,
-&ldquo;Parallel&rdquo; and &ldquo;doParallel&rdquo; packages, which are needed for the Windows OS. I also choose &ldquo;cv&rdquo; (cross-validation) resampling method, which reduces the CPU time substantially. See reference [2] for more information above &ldquo;Parallel Processing&rdquo;.</p>
+&ldquo;Parallel&rdquo; and &ldquo;doParallel&rdquo; packages, which are needed for the Windows OS. I also choose &ldquo;cv&rdquo; (cross-validation) resampling method, which reduces the CPU time substantially. See reference [2] for more information about &ldquo;Parallel Processing&rdquo;.</p>
 
-<p>I explored cross-validation resampling method with differnce K-fold (4, 8, 15), differnece training data size (20%, 50% or 70% of the tidydata set), and difference &ldquo;mtry&rdquo; number to train the random forest model, to find out which combination yield optimum model in term of accuracy, performing, traing data sise, and CPU time. See reference [3] for more information above model turning.</p>
+<p>I explored cross-validation resampling method with differnce K-fold (4, 8, 15), differnece training data size (20%, 50% or 70% of the tidydata set), and difference &ldquo;mtry&rdquo; number to train the random forest model, to find out which combination yield optimum model in term of accuracy, performing, traing data sise, and CPU time. See reference [3] for more information about model turning.</p>
 
 <pre><code class="r"># create training set.
 library(caret)
-#trainIndex &lt;- createDataPartition(y = tidyData$classe, p=0.8,list=FALSE) # 15699 rows
+</code></pre>
+
+<pre><code>## Loading required package: lattice
+</code></pre>
+
+<pre><code class="r">#trainIndex &lt;- createDataPartition(y = tidyData$classe, p=0.8,list=FALSE) # 15699 rows
 #trainIndex &lt;- createDataPartition(y = tidyData$classe, p=0.5,list=FALSE) # 9812 rows Accuracy=0.991
 trainIndex &lt;- createDataPartition(y = tidyData$classe, p=0.7,list=FALSE)  # 13737 rows Accuracy=0.994,number=15;
 trainData &lt;- tidyData[trainIndex,]
@@ -332,7 +342,12 @@ dim(validateData)
 library(foreach)
 library(parallel)
 library(doParallel)
-coreNumber&lt;-(detectCores()-1)
+</code></pre>
+
+<pre><code>## Loading required package: iterators
+</code></pre>
+
+<pre><code class="r">coreNumber&lt;-(detectCores()-1)
 cluster &lt;-makeCluster(coreNumber, type = &quot;SOCK&quot;,outfile=&quot;&quot;)
 registerDoParallel(cluster)
 #registerDoParallel(6)
@@ -348,8 +363,13 @@ tuneGrid = data.frame(.mtry = seq(4,8,1))
 system.time(rf8 &lt;- train(trainData$classe ~.,data = trainData, method=&quot;rf&quot;, trControl=tControl, tuneGrid=tuneGrid, allowParallel=T))
 </code></pre>
 
+<pre><code>## Loading required package: randomForest
+## randomForest 4.6-7
+## Type rfNews() to see new features/changes/bug fixes.
+</code></pre>
+
 <pre><code>##    user  system elapsed 
-##   40.37    0.61  595.09
+##   40.06    0.54  597.87
 </code></pre>
 
 <pre><code class="r">stopCluster(cluster)
@@ -370,19 +390,19 @@ rf8
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
-##   4     1         1      0.003        0.004   
-##   5     1         1      0.003        0.004   
-##   6     1         1      0.003        0.003   
-##   7     1         1      0.003        0.004   
-##   8     1         1      0.003        0.003   
+##   4     1         1      0.002        0.003   
+##   5     1         1      0.002        0.003   
+##   6     1         1      0.002        0.003   
+##   7     1         1      0.002        0.002   
+##   8     1         1      0.002        0.002   
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
-## The final value used for the model was mtry = 8.
+## The final value used for the model was mtry = 7.
 </code></pre>
 
 <h3>2.5 Out of sample error.</h3>
 
-<p>From the model &ldquo;rf8&rdquo; output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs, hence &ldquo;the in sample error&rdquo; is 0.0 or 0.006 (0.6%). One can expect &ldquo;the out of sample error&rdquo; will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation resampling method, and the prediction on the validate data set has confirm this (refer to below).</p>
+<p>From the model &ldquo;rf8&rdquo; output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs (even the set.seed command is used), hence the &ldquo;in sample error&rdquo; is 0.0 or 0.006 (0.6%). One can expect the &ldquo;out of sample error&rdquo; will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation re-sampling method and a lot of observation data (13737). The prediction on the validate data set has confirm this expectation (refer to below).</p>
 
 <pre><code class="r"># predict the validate data
 pred &lt;- predict(rf8,validateData); predTrainRight &lt;- pred==validateData$classe
@@ -391,20 +411,20 @@ table(pred,predTrainRight)
 
 <pre><code>##     predTrainRight
 ## pred FALSE TRUE
-##    A     8 1674
-##    B     5 1126
-##    C    15 1020
-##    D     8  954
-##    E     1 1074
+##    A     4 1673
+##    B     9 1129
+##    C    19 1017
+##    D     1  954
+##    E     1 1078
 </code></pre>
 
 <pre><code class="r">length(predTrainRight[predTrainRight==TRUE]) / length(predTrainRight);
 </code></pre>
 
-<pre><code>## [1] 0.9937
+<pre><code>## [1] 0.9942
 </code></pre>
 
-<p>From the above ouput, the out of sample error on the validate data set is 0.6%</p>
+<p>From the above ouput, the &ldquo;out of sample error&rdquo; on the validate data set is 0.6%</p>
 
 <h3>2.6 Predict the test cases.</h3>
 
