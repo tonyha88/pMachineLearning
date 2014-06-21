@@ -402,7 +402,7 @@ rf8
 
 <h3>2.5 Out of sample error.</h3>
 
-<p>From the model &ldquo;rf8&rdquo; output, one can see the accuracy of the model is 1 (i.e 100%) or 0.994 (99.45), it differ slightly between runs (even the set.seed command is used), hence the &ldquo;in sample error&rdquo; is 0.0 or 0.006 (0.6%). One can expect the &ldquo;out of sample error&rdquo; will also be very small, in the range of 0% to 1.6%, because the model was build using 15 K-fold cross-validation re-sampling method and a lot of observation data (13737). The prediction on the validate data set has confirm this expectation (refer to below).</p>
+<p>From the model &ldquo;rf8&rdquo; output, one can see the accuracy of the model is 1 (i.e 100%), hence the &ldquo;in sample error&rdquo; (i.e. 1 - accuracy) is 0.0%. One can expect the &ldquo;out of sample error&rdquo; will also be very small, in the range of 0% to 1.0%, because the model was build using 15 K-fold cross-validation re-sampling method, a lot of observation data (13737) and difference mtry numbers. The prediction on the validate data set has confirm this expectation (refer to below).</p>
 
 <pre><code class="r"># predict the validate data
 pred &lt;- predict(rf8,validateData); predTrainRight &lt;- pred==validateData$classe
@@ -441,7 +441,7 @@ testPred
 
 <h2>3. Results.</h2>
 
-<p>The final random forest model was build with ntree=500 (default), mtry = 8, with 13737 rows of observation data (70% of the given traing data set), with 15 K-fold cross-validation re-sampling method, it took about 10 minutes CPU time on a 8 cores Window 8.1 PC. The accuracy of the model is very high 99.4% or 100%, and out of sample error on the validate data set is only 0.6% on the validation set (has 5885 cases), and 100% on the test set (has 20 cases).</p>
+<p>The final random forest model was build with ntree=500 (default), mtry = 8, with 13737 rows of observation data (70% of the given traing data set), with 15 K-fold cross-validation re-sampling method, it took about 10 minutes CPU time on a 8 cores Window 8.1 PC. The accuracy of the model is very high 100%, and out of sample error on the validate data set is only 0.6% on the validation set (has 5885 cases), and 100% on the test set (has 20 cases).</p>
 
 <h2>4. References</h2>
 
